@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/8/2 9:39:01
- * CLR版本：4.0.30319.42000
- */
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Deckup.Extend
 {

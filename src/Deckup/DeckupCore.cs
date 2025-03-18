@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/6/11 10:52:02
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Side;
+﻿using Deckup.Side;
 using Deckup.Slide;
 using System;
 
@@ -12,8 +6,16 @@ namespace Deckup
 {
     public abstract class DeckupCore : IDisposable
     {
-        public long Timestamp { get { return _core != null ? _core.Timestamp : 0; } }
-        public int Rtt { get { return _core != null ? _core.RoundTripTime : 0; } }
+        public long Timestamp
+        {
+            get { return _core != null ? _core.Timestamp : 0; }
+        }
+
+        public int Rtt
+        {
+            get { return _core != null ? _core.RoundTripTime : 0; }
+        }
+
         public int Mtu { get; private set; }
         protected SlideWindow _window;
         protected SideCore _core;

@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/06/04 14:42
- * CLR版本：4.0.30319.42000
- */
-
-using System;
+﻿using System;
 
 namespace Deckup.LoopQueue
 {
@@ -34,7 +28,10 @@ namespace Deckup.LoopQueue
         /// </summary>
         public bool PacketMode { get; protected set; }
 
-        internal T[] Buf { get { return _buffer; } }
+        internal T[] Buf
+        {
+            get { return _buffer; }
+        }
 
         protected int _packetSize;
         protected int _packetCount;

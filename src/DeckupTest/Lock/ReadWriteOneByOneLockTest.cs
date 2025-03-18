@@ -1,19 +1,4 @@
-﻿// >>
-//--------------------------------------------------------------
-//Project: DeckupTest
-//File: \ReadWriteOneByOneLockTest.cs
-//File Created: 2024-09-12 16:25:35
-//--------------------------------------------------------------
-//Author: Yjulm
-//Email: yjulm@hotmail.com
-//--------------------------------------------------------------
-//Last Modified By: Yjulm
-//Last Modified Date: 2025-01-02 17:44:02
-//--------------------------------------------------------------
-// <<
-
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

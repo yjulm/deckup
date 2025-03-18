@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/7/30 19:38:04
- * CLR版本：4.0.30319.42000
- */
-
-using System;
+﻿using System;
 using System.Threading;
 
 namespace Deckup.Lock
@@ -46,7 +40,7 @@ namespace Deckup.Lock
 
         public bool EnterWrite(bool wait = true)
         {
-        wait:
+            wait:
             if (_x == 1 && _r == 1)
             {
                 if (_m == 1)
@@ -65,6 +59,7 @@ namespace Deckup.Lock
                 _spin.SpinOnce(); //Thread.Yield(); //短时自旋代替出让
                 goto wait;
             }
+
             return false;
         }
 
@@ -78,7 +73,7 @@ namespace Deckup.Lock
 
         public bool EnterRead(bool wait = true)
         {
-        wait:
+            wait:
             if (_x == 1 && _w == 1)
             {
                 if (_m == 1)
@@ -96,6 +91,7 @@ namespace Deckup.Lock
                 _spin.SpinOnce(); //Thread.Yield();
                 goto wait;
             }
+
             return false;
         }
 

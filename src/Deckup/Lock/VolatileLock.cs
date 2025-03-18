@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/7/28 21:01:34
- * CLR版本：4.0.30319.42000
- */
-
-using System;
+﻿using System;
 using System.Threading;
 
 namespace Deckup.Lock
@@ -18,13 +12,14 @@ namespace Deckup.Lock
 
         public bool Enter()
         {
-        retry:
+            retry:
             int ret = Interlocked.CompareExchange(ref _lock, 1, 0);
             if (ret == 1)
             {
                 Thread.Yield(); //出让CPU时间，否则持续无效的调用
                 goto retry;
             }
+
             return ret == 0;
         }
 
@@ -58,19 +53,21 @@ namespace Deckup.Lock
         /// TODO: 缓存行在未对其的情况下，频繁读取将严重影响性能（由于外部数据与当前数据同处一行，外部数据的修改导致了当前缓冲行同步）
         /// </summary>
         private long _p01, _p02, _p03, _p04, _p05, _p06, _p07;
+
         private volatile int _lock, _p08;
         private long _p11, _p12, _p13, _p14, _p15, _p16, _p17;
 #pragma warning restore 169
 
         public bool Enter()
         {
-        retry:
+            retry:
             int ret = Interlocked.CompareExchange(ref _lock, 1, 0);
             if (ret == 1)
             {
                 Thread.Yield(); //出让CPU时间，否则持续无效的调用
                 goto retry;
             }
+
             return ret == 0;
         }
 

@@ -15,7 +15,7 @@ namespace Deckup.Extend
             TextWriter writer = new StringWriter(builder);
             writer.WriteLine("/*");
             writer.WriteLine(" *系统版本：{0}", Environment.OSVersion.VersionString);
-            writer.WriteLine(" *运行版本：{0}", (lib != null) ? lib.GetName().Version.ToString() : string.Empty);  //(Assembly.GetEntryAssembly() ?? Application.Current.GetType().Assembly).GetName().Version);
+            writer.WriteLine(" *运行版本：{0}", (lib != null) ? lib.GetName().Version.ToString() : string.Empty); //(Assembly.GetEntryAssembly() ?? Application.Current.GetType().Assembly).GetName().Version);
             writer.WriteLine(" *错误来源：{0}", from);
             writer.WriteLine(" *发生时间：{0}", DateTime.Now);
             writer.WriteLine(" *错误对象：{0}", ex.Source ?? string.Empty);
@@ -29,6 +29,7 @@ namespace Deckup.Extend
                 writer.WriteLine(" *原始异常方法：{0}", (ex.InnerException.TargetSite != null) ? ex.InnerException.TargetSite.ToString() : string.Empty);
                 writer.WriteLine(" *原始堆栈信息：{0}", (ex.InnerException.StackTrace != null) ? ex.InnerException.StackTrace.Replace("\n", "\n *") : string.Empty);
             }
+
             writer.WriteLine(" */\n");
             return builder;
         }

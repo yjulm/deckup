@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/3/27 15:53:32
- * CLR版本：4.0.30319.42000
- */
-
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
 

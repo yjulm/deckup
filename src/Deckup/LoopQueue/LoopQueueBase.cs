@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/06/04 14:42
- * CLR版本：4.0.30319.42000
- */
-
-using System;
+﻿using System;
 
 namespace Deckup.LoopQueue
 {
@@ -46,8 +40,16 @@ namespace Deckup.LoopQueue
             }
         }
 
-        public int ReadOffset { get { return _readOffset; } }
-        public int WriteOffset { get { return _writeOffset; } }
+        public int ReadOffset
+        {
+            get { return _readOffset; }
+        }
+
+        public int WriteOffset
+        {
+            get { return _writeOffset; }
+        }
+
         public int BufferSize { get; protected set; }
 
         private volatile bool _readNewLine;
@@ -97,6 +99,7 @@ namespace Deckup.LoopQueue
                 offset = BufferSize + offset;
                 wraparound = true;
             }
+
             return offset;
         }
 

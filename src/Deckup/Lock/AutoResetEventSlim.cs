@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/8/20 22:11:28
- * CLR版本：4.0.30319.42000
- */
-
-using System;
+﻿using System;
 using System.Threading;
 
 namespace Deckup.Lock
@@ -41,7 +35,7 @@ namespace Deckup.Lock
                     lock (_pulseLock)
                     {
                         _wait = true;
-                        Monitor.Wait(_pulseLock);    //释放锁但挂起当前调用线程，直到重新取得锁
+                        Monitor.Wait(_pulseLock); //释放锁但挂起当前调用线程，直到重新取得锁
                         _wait = false;
                     }
             }
@@ -64,7 +58,7 @@ namespace Deckup.Lock
                 {
                     if (_pulse)
                     {
-                        SpinWait.SpinUntil(() => !_wait);   //wait WaitOne exit suspend
+                        SpinWait.SpinUntil(() => !_wait); //wait WaitOne exit suspend
                         _pulse = false;
                         break;
                     }
@@ -73,18 +67,18 @@ namespace Deckup.Lock
                         lock (_pulseLock)
                         {
                             //因为Pulse的自身先后约束，通知完了后，要确认通知生效，所以此处不能打断 while 循环
-                            Monitor.Pulse(_pulseLock);   //notify WaitOne
+                            Monitor.Pulse(_pulseLock); //notify WaitOne
                             _pulse = true;
                         }
                     }
                 }
-                else if (_pulse)    //Pulse OK, _wait change false, exit while loop
+                else if (_pulse) //Pulse OK, _wait change false, exit while loop
                 {
                     _pulse = false;
                     break;
                 }
-                else    //没有 WaitOne 而直接 Set ，必须自旋等待 WaitOne 就绪
-                    SpinWait.SpinUntil(() => _disposed || _wait);   //wait WaitOne call
+                else //没有 WaitOne 而直接 Set ，必须自旋等待 WaitOne 就绪
+                    SpinWait.SpinUntil(() => _disposed || _wait); //wait WaitOne call
             }
         }
 

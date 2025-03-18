@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/7/21 11:09:09
- * CLR版本：4.0.30319.42000
- */
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 using Deckup.Extend;
 

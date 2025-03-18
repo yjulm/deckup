@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/7/8 17:20:43
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Slide;
+﻿using Deckup.Slide;
 using System;
 
 namespace Deckup.Side
@@ -27,7 +21,7 @@ namespace Deckup.Side
                 if (_core.SelectRead(WaitConRes, SendConReq))
                 {
                     int retry = 3;
-                retry:
+                    retry:
                     if (SendConRet())
                         if (_core.SelectRead(WaitConEnd, SendConRet))
                             return true;
@@ -48,7 +42,7 @@ namespace Deckup.Side
                     DisconnectReady = true;
 
                     int retry = 3;
-                retry:
+                    retry:
                     if (_core.SelectRead(WaitClsRet, null))
                     {
                         if (SendClsCfm())
@@ -93,6 +87,7 @@ namespace Deckup.Side
                     _core.UpdateRtt(_core.Rcv.AckTimestamp);
                     return true;
                 }
+
             return false;
         }
 
@@ -113,6 +108,7 @@ namespace Deckup.Side
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -151,6 +147,7 @@ namespace Deckup.Side
                 else if (ProcessAck != null)
                     ProcessAck();
             }
+
             return false;
         }
 
@@ -164,6 +161,7 @@ namespace Deckup.Side
                 }
                 else if (ProcessAck != null)
                     ProcessAck();
+
             return false;
         }
     }

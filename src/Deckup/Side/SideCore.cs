@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/7/8 17:28:21
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Extend;
+﻿using Deckup.Extend;
 using Deckup.Lock;
 using System;
 using System.Diagnostics;
@@ -43,11 +37,20 @@ namespace Deckup.Side
         /// <summary>
         /// tick * 100 => ns / 1000 => us / 1000 => ms;
         /// </summary>
-        public long Timestamp { get { return _stopwatch.ElapsedTicks; } }
+        public long Timestamp
+        {
+            get { return _stopwatch.ElapsedTicks; }
+        }
 
-        public int RoundTripTime { get { return _srtt; } }
+        public int RoundTripTime
+        {
+            get { return _srtt; }
+        }
 
-        public int MillisecondsRTT { get { return _srtt / 10 / 1000; } }
+        public int MillisecondsRTT
+        {
+            get { return _srtt / 10 / 1000; }
+        }
 
         private int SelectTimeout
         {
@@ -205,13 +208,14 @@ namespace Deckup.Side
             if (_socket.Available > 0 || _socket.Poll(0, SelectMode.SelectRead))
             {
                 int length = _socket.Connected
-                        ? _socket.Receive(_rcvSeg.Buf, _rcvSeg.BufOffset, _rcvSeg.BufSize, SocketFlags.None)
-                        : _socket.ReceiveFrom(_rcvSeg.Buf, _rcvSeg.BufOffset, _rcvSeg.BufSize, SocketFlags.None, ref _rcvEp);
+                    ? _socket.Receive(_rcvSeg.Buf, _rcvSeg.BufOffset, _rcvSeg.BufSize, SocketFlags.None)
+                    : _socket.ReceiveFrom(_rcvSeg.Buf, _rcvSeg.BufOffset, _rcvSeg.BufSize, SocketFlags.None, ref _rcvEp);
                 _rcvSeg.Cache();
 
                 PrintReceive(_rcvSeg, _socket.LocalEndPoint, _socket.Connected ? _socket.RemoteEndPoint : _rcvEp);
                 return length > 0;
             }
+
             return false;
         }
 
@@ -231,9 +235,9 @@ namespace Deckup.Side
             int retry = 0;
             bool next = false;
 
-        select:
+            select:
             if (_socket.Poll(next ? 0 : retry * SelectTimeout * 1000
-                , SelectMode.SelectRead))
+                    , SelectMode.SelectRead))
             {
                 if (selectSuccess != null && selectSuccess())
                     return true;
@@ -252,6 +256,7 @@ namespace Deckup.Side
                 retry++;
                 goto select;
             }
+
             return false;
         }
 

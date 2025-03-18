@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/8/9 11:51:25
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Packet;
+﻿using Deckup.Packet;
 using System;
 
 namespace DeckupTestClient
@@ -13,10 +7,7 @@ namespace DeckupTestClient
     {
         public int Length
         {
-            get
-            {
-                return BitConverter.ToInt32(Buf, 0);
-            }
+            get { return BitConverter.ToInt32(Buf, 0); }
             set
             {
                 Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -29,10 +20,7 @@ namespace DeckupTestClient
 
         public uint DebugIndex
         {
-            get
-            {
-                return BitConverter.ToUInt32(Buf, 4);
-            }
+            get { return BitConverter.ToUInt32(Buf, 4); }
             set
             {
                 Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -43,10 +31,25 @@ namespace DeckupTestClient
             }
         }
 
-        public byte[] Buf { get { return _buf; } }
-        public int BufOffset { get { return sizeof(int) * 2; } }
-        public int ValidSize { get { return Length + BufOffset; } }
-        public int MaxDataSize { get { return _buf.Length - BufOffset; } }
+        public byte[] Buf
+        {
+            get { return _buf; }
+        }
+
+        public int BufOffset
+        {
+            get { return sizeof(int) * 2; }
+        }
+
+        public int ValidSize
+        {
+            get { return Length + BufOffset; }
+        }
+
+        public int MaxDataSize
+        {
+            get { return _buf.Length - BufOffset; }
+        }
 
         private readonly byte[] _buf;
 

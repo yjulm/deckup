@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2018/12/26 17:04:43
- * CLR版本：4.0.30319.42000
- */
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -129,6 +123,7 @@ namespace Deckup.Unmanaged
                     _position = _length - offset;
                     break;
             }
+
             return _position;
         }
 
@@ -206,6 +201,7 @@ namespace Deckup.Unmanaged
                     _refPtr = Marshal.ReAllocHGlobal(_refPtr, (IntPtr)capacity);
                 }
             }
+
             _capacity = capacity;
         }
 

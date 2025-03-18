@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/06/04 14:42
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Unmanaged;
+﻿using Deckup.Unmanaged;
 using System;
 
 namespace Deckup.LoopQueue

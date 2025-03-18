@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/6/24 15:30:55
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Extend;
+﻿using Deckup.Extend;
 using Deckup.Lock;
 using Deckup.Side;
 using System.Collections.Generic;
@@ -29,7 +23,7 @@ namespace Deckup
         private Task _accept;
         private ReadWriteOneByOneLock _acceptLock;
 
-        public DeckupServer(int mtu = 576 - 20 -8, int windowSize = 32, int packetCount = 64)
+        public DeckupServer(int mtu = 576 - 20 - 8, int windowSize = 32, int packetCount = 64)
             : base(mtu, windowSize, packetCount)
         {
             _passive = new PassiveSide(_core, _window);
@@ -63,7 +57,7 @@ namespace Deckup
             AcceptTask();
 
             bool wait = false;
-        retry:
+            retry:
             if (_lockDic.Enter())
             {
                 wait = false;
@@ -128,6 +122,7 @@ namespace Deckup
                                     _clients.Add(ep, client);
                                 }
                             }
+
                             _lockDic.Exit();
 
                             if (client != null)
@@ -154,6 +149,7 @@ namespace Deckup
                 ret = _passive.SendConRes(client.AcceptEp, (ushort)client.LocalEp.Port, client.Timestamp);
                 _lockSend.Exit();
             }
+
             return ret;
         }
 

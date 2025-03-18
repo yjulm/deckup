@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/7/8 17:21:07
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Extend;
+﻿using Deckup.Extend;
 using Deckup.Lock;
 using Deckup.Slide;
 using System;
@@ -15,7 +9,10 @@ namespace Deckup.Side
 {
     internal class PassiveSide : AbstractSlide, IDisposable
     {
-        public IPEndPoint RcvPoint { get { return _core.RcvEp; } }
+        public IPEndPoint RcvPoint
+        {
+            get { return _core.RcvEp; }
+        }
 
         public Segment RcvSeg
         {
@@ -53,6 +50,7 @@ namespace Deckup.Side
                     return SendProbe();
                 }
             }
+
             return false;
         }
 
@@ -72,6 +70,7 @@ namespace Deckup.Side
                     Interlocked.Exchange(ref _enterReceive, 0);
                 }
             }
+
             return ret;
         }
 
@@ -101,7 +100,7 @@ namespace Deckup.Side
             _core.StartTimestamp();
 
             int retry = 3;
-        retry:
+            retry:
             if (sendConRes != null && sendConRes())
                 if (_core.SelectRead(WaitConRet, sendConRes))
                 {
@@ -142,7 +141,7 @@ namespace Deckup.Side
 
             int retry = 3;
 
-        retry:
+            retry:
             if (SendClsRet())
                 if (_core.SelectRead(WaitClsCfm, SendClsRet))
                 {
@@ -344,6 +343,7 @@ namespace Deckup.Side
                 else
                     TryProcessReceive(true); //处理ClsRet前的Psh数据与Ack响应
             }
+
             return false;
         }
 
@@ -426,6 +426,7 @@ namespace Deckup.Side
                 _markSeg.Command = Cmd.Err;
                 _markLock.ExitRead();
             }
+
             return ret;
         }
 
@@ -442,6 +443,7 @@ namespace Deckup.Side
                 _ackSeg.Command = Cmd.Err;
                 _ackLock.ExitRead();
             }
+
             return ret;
         }
 

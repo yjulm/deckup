@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/6/24 15:31:08
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Extend;
+﻿using Deckup.Extend;
 using Deckup.Packet;
 using Deckup.Side;
 using System;
@@ -15,10 +9,27 @@ namespace Deckup
 {
     public class DeckupClient : DeckupCore
     {
-        public bool CanConnect { get { return _canConnect; } set { _canConnect = value; } }
-        public bool Connected { get { return _active.Connected || _passive.Connected; } }
-        public bool Disconnected { get { return _active.Disconnected || _passive.Disconnected; } }
-        public IPEndPoint LocalEp { get { return _core.LocalEp; } }
+        public bool CanConnect
+        {
+            get { return _canConnect; }
+            set { _canConnect = value; }
+        }
+
+        public bool Connected
+        {
+            get { return _active.Connected || _passive.Connected; }
+        }
+
+        public bool Disconnected
+        {
+            get { return _active.Disconnected || _passive.Disconnected; }
+        }
+
+        public IPEndPoint LocalEp
+        {
+            get { return _core.LocalEp; }
+        }
+
         public IPEndPoint AcceptEp { get; private set; }
 
         private ActiveSide _active;
@@ -31,7 +42,7 @@ namespace Deckup
         private int _enterSend;
         private int _enterReceive;
 
-        public DeckupClient(int mtu = 576 - 20 -8, int windowSize = 32, int packetCount = 64)
+        public DeckupClient(int mtu = 576 - 20 - 8, int windowSize = 32, int packetCount = 64)
             : base(mtu, windowSize, packetCount)
         {
             _core.Bind(new IPEndPoint(0, 0));
@@ -77,6 +88,7 @@ namespace Deckup
                 if (!_active.Connected)
                     return _active.Connect(ip, port);
             }
+
             return false;
         }
 
@@ -99,6 +111,7 @@ namespace Deckup
                     return _active.Disconnect();
                 }
             }
+
             true.Break();
             return false;
         }
@@ -127,6 +140,7 @@ namespace Deckup
                         _core.ReleaseSend();
                     }
             }
+
             return ret;
         }
 
@@ -154,6 +168,7 @@ namespace Deckup
                         _core.ReleaseReceive();
                     }
             }
+
             return ret;
         }
 
@@ -186,6 +201,7 @@ namespace Deckup
 
                 _active = null;
             }
+
             base.Dispose();
         }
     }

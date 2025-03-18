@@ -64,6 +64,7 @@ namespace DeckupTest.Lock
                 {
                     Debugger.Break();
                 }
+
                 return _readCount;
             }, TaskCreationOptions.LongRunning);
 
@@ -90,6 +91,7 @@ namespace DeckupTest.Lock
                 {
                     Debugger.Break();
                 }
+
                 return _writeCount;
             }, TaskCreationOptions.LongRunning);
 

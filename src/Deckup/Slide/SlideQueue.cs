@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/6/28 16:58:51
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Extend;
+﻿using Deckup.Extend;
 using Deckup.LoopQueue;
 using System;
 using System.Linq;
@@ -131,6 +125,7 @@ namespace Deckup.Slide
                 _queue.SetWrite(length);
                 return true;
             }
+
             true.Break();
             return false;
         }
@@ -142,6 +137,7 @@ namespace Deckup.Slide
                 _queue.SetRead(length);
                 return true;
             }
+
             true.Break();
             return false;
         }
@@ -184,6 +180,7 @@ namespace Deckup.Slide
                     seg.Array[seg.Offset] = segment;
                     segment = ret;
                 }
+
                 _queue.FallbackWrite(margin);
 
 #if DEBUG
@@ -228,6 +225,7 @@ namespace Deckup.Slide
 #endif
 #endif
             }
+
             (_seekSeg == null).Break();
             return _seekSeg;
         }
@@ -264,6 +262,7 @@ namespace Deckup.Slide
 #endif
 #endif
             }
+
             (_seekSeg == null).Break();
             return _seekSeg;
         }

@@ -1,11 +1,6 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/11/29 19:09:46
- * CLR版本：4.0.30319.42000
- */
-
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
+
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

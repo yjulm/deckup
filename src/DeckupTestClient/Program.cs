@@ -1,25 +1,4 @@
-﻿// >>
-//--------------------------------------------------------------
-//Project: DeckupClient
-//File: \Program.cs
-//File Created: 2021-12-01 09:25:30
-//--------------------------------------------------------------
-//Author: Yjulm
-//Email: yjulm@hotmail.com
-//--------------------------------------------------------------
-//Last Modified By: Yjulm
-//Last Modified Date: 2025-01-03 16:58:20
-//--------------------------------------------------------------
-// <<
-
-
-/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/6/23 11:48:03
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Extend;
+﻿using Deckup.Extend;
 using Deckup;
 using System;
 using System.Diagnostics;
@@ -114,7 +93,7 @@ namespace DeckupTestClient
             {
                 Console.WriteLine("[Loop:{0}] Try Connect!", loop);
 
-            retry:
+                retry:
                 DeckupClientWrap client = new DeckupClientWrap();
                 if (client.Connect("192.168.0.3", 30319))
                 {

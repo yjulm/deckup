@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/7/26 16:42:03
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Slide;
+﻿using Deckup.Slide;
 using System.Net;
 
 namespace Deckup.Side

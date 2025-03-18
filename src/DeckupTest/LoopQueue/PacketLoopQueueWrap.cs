@@ -62,6 +62,7 @@ namespace DeckupTest.LoopQueue
                     Checksum(data, false); //generate checksum
                 }
             }
+
             return ret;
         }
 
@@ -89,6 +90,7 @@ namespace DeckupTest.LoopQueue
                     }
                 }
             }
+
             return ret;
         }
 

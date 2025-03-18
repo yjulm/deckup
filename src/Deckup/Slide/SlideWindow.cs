@@ -1,10 +1,4 @@
-﻿/*
- * 创作者：yjulm@hotmail.com
- * 生成时间：2021/6/30 17:41:27
- * CLR版本：4.0.30319.42000
- */
-
-using Deckup.Extend;
+﻿using Deckup.Extend;
 using Deckup.Packet;
 using Deckup.Side;
 using System;
@@ -149,6 +143,7 @@ namespace Deckup.Slide
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -162,7 +157,7 @@ namespace Deckup.Slide
                     Segment seek = SeekWrite(margin);
                     if (seek != null
                         && ((seek.Index != segment.Index)
-                        || seek.Command == Cmd.Err)) //相等则说明上一次已经设置了Ack，这是收到了重传的Ack
+                            || seek.Command == Cmd.Err)) //相等则说明上一次已经设置了Ack，这是收到了重传的Ack
                     {
                         seek.From(segment);
                         _receiveMargin = _receiveMargin - 1;
@@ -188,7 +183,7 @@ namespace Deckup.Slide
                     Segment seek = SeekWrite(margin);
                     if (seek != null
                         && ((seek.Index != segment.Index)
-                        || seek.Command == Cmd.Err)) //相等则说明上一次已经设置了Ack，这是收到了重传的Ack
+                            || seek.Command == Cmd.Err)) //相等则说明上一次已经设置了Ack，这是收到了重传的Ack
                     {
                         //resend = TryGetResendFormReceiveQueueByFastCheck(seek);
 
@@ -394,6 +389,7 @@ namespace Deckup.Slide
                         Buffer.BlockCopy(packet.Buf, offset, data.Array, data.Offset, length);
                         _send.MoveWriteRef(1);
                     }
+
                     return true;
                 }
                 else
@@ -516,6 +512,7 @@ namespace Deckup.Slide
                     && ts.Timestamp - seek.Timestamp > ts.RoundTripTime)
                     return seek;
             }
+
             return null;
         }
 
@@ -528,9 +525,10 @@ namespace Deckup.Slide
                 Segment seek = SeekWrite(margin);
                 if (seek != null
                     && ((seek.Index != checkIndex)
-                     || seek.Command == Cmd.Err))
+                        || seek.Command == Cmd.Err))
                     return true;
             }
+
             return false;
         }
 
@@ -549,6 +547,7 @@ namespace Deckup.Slide
                         return seek;
                 }
             }
+
             return null;
         }
 
