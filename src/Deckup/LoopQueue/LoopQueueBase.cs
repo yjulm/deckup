@@ -1,42 +1,50 @@
 ﻿using System;
+using Deckup.Extend;
 
 namespace Deckup.LoopQueue
 {
     /// <summary>
-    /// 一个固定大小的环行队列
+    /// 基于单行缓冲区设计的环形队列，提供队列的读写状态查询与验证的基础行为操作
     /// </summary>
     public abstract class LoopQueueBase
     {
         /// <summary>
-        ///
+        /// 取得当前可写入大小，该大小依据读取状态确定。
+        /// 1： 读取换行置为0时，未写入换行前，写偏移量之后的剩余部分为可写入区域，
+        ///    写入换行后，则无剩余空间。
+        /// 2： 读取换行后不为0时，未写入换行前，写偏移量之后剩余部分加上读取偏移量之前的部分为可写入区域，
+        ///    写入换行后，写入偏移量之后与则读取偏移量之前的中间部分为可写入区域。
         /// </summary>
         public int CanWriteSize
         {
             get
             {
-                return _readOffset > 0
-                    ? _writeNewLine
-                        ? _readOffset - _writeOffset
-                        : BufferSize - _writeOffset + _readOffset
-                    : _writeNewLine
-                        ? 0
-                        : BufferSize - _writeOffset;
+                int ret = _readNewLine
+                    ? BufferSize - _writeOffset + _readOffset
+                    : _readOffset - _writeOffset;
+
+                (ret < 0 || ret > BufferSize).Break();
+                return ret;
             }
         }
 
+        /// <summary>
+        /// 取得当前的可读取大小，该大小依据写入状态确定。
+        /// 1： 写入换行置为0时，未读取换行前，读取偏移量之后的剩余部分为可读取部分，
+        ///    读取换行后，则无可读空间。
+        /// 2： 写入换行后不为0时，未读取换行前，读取偏移量之后的剩余部分加上写入偏移量之前的部分为可读取区域，
+        ///    读取换行后，读取偏移量之后与写入偏移量之前的中间部分为可读取部分。
+        /// </summary>
         public int CanReadSize
         {
             get
             {
-                return _writeOffset > 0
-                    ? _readNewLine
-                        ? _writeOffset - _readOffset
-                        : _writeNewLine
-                            ? BufferSize - _readOffset + _writeOffset
-                            : _writeOffset - _readOffset
-                    : _writeNewLine
-                        ? BufferSize - _readOffset
-                        : 0;
+                int ret = _writeNewLine
+                    ? BufferSize - _readOffset + _writeOffset
+                    : _writeOffset - _readOffset;
+
+                (ret < 0 || ret > BufferSize).Break();
+                return ret;
             }
         }
 
@@ -57,59 +65,79 @@ namespace Deckup.LoopQueue
         private volatile int _readOffset;
         private volatile int _writeOffset;
 
+        /// <summary>
+        /// 初始状态类似于读写速度相当，写入换行后读取立刻完成换行并重置写入换行，此时等待写入新数据。
+        /// 由于单行缓冲队列需要注意的一个原则是读写对应的换行状态之间永远是互斥的。
+        /// </summary>
+        protected LoopQueueBase()
+        {
+            _readNewLine = true;
+            _writeNewLine = false;
+        }
+
+        /// <summary>
+        /// 探查在读取指定长度后的偏移量，并确定换行行为
+        /// </summary>
         protected int SeekRead(out bool newLine, int length = 1)
         {
-            if (length <= 0 || length > BufferSize)
-                throw new ArgumentOutOfRangeException();
-
-            newLine = false;
-            int readOffset = _readOffset + length;
-            if (readOffset >= BufferSize)
-            {
-                readOffset = readOffset - BufferSize; //读需要换行来到写的左边，恢复到刚开始的样子
-                newLine = true;
-            }
-
-            return readOffset;
+            return SeekOffset(_readOffset, length, out newLine);
         }
 
+        /// <summary>
+        /// 探查在写入指定长度后的偏移量，并确定换行行为
+        /// </summary>
         protected int SeekWrite(out bool newLine, int length = 1)
         {
+            return SeekOffset(_writeOffset, length, out newLine);
+        }
+
+        /// <summary>
+        /// 探查在指定偏移量上前进一定长度后的偏移量，并获取换行状态
+        /// </summary>
+        private int SeekOffset(int offset, int length, out bool newLine)
+        {
             if (length <= 0 || length > BufferSize)
                 throw new ArgumentOutOfRangeException();
 
             newLine = false;
-            int writeOffset = _writeOffset + length;
-            if (writeOffset >= BufferSize)
+
+            offset += length;
+            if (offset >= BufferSize)
             {
-                writeOffset = writeOffset - BufferSize; //写需要换行来到读的左边，等待读让出位置直到换行回到写的左边
+                offset -= BufferSize; //换行后的实际位置
                 newLine = true;
             }
 
-            return writeOffset;
+            return offset;
         }
 
-        private int Fallback(int offset, int length, out bool wraparound)
+        /// <summary>
+        /// 探查在指定偏移量上回退一定长度后的偏移量，并获取回绕状态
+        /// </summary>
+        private int FallbackOffset(int offset, int length, out bool wraparound)
         {
+            if (length <= 0 || length > BufferSize)
+                throw new ArgumentOutOfRangeException();
+
             wraparound = false;
 
-            offset = offset - length;
+            offset -= length;
             if (offset < 0)
             {
-                offset = BufferSize + offset;
+                offset += BufferSize; //回退后的实际位置
                 wraparound = true;
             }
 
             return offset;
         }
 
+        /// <summary>
+        /// 从读取偏移量上回退指定的长度
+        /// </summary>
         public void FallbackRead(int length = 1)
         {
-            if (length <= 0 || length > BufferSize)
-                throw new ArgumentOutOfRangeException();
-
             bool wraparound;
-            _readOffset = Fallback(_readOffset, length, out wraparound);
+            _readOffset = FallbackOffset(_readOffset, length, out wraparound);
             if (wraparound)
             {
                 _writeNewLine = true;
@@ -117,13 +145,13 @@ namespace Deckup.LoopQueue
             }
         }
 
+        /// <summary>
+        /// 从写入偏移量上回退指定的长度
+        /// </summary>
         public void FallbackWrite(int length = 1)
         {
-            if (length <= 0 || length > BufferSize)
-                throw new ArgumentOutOfRangeException();
-
             bool wraparound;
-            _writeOffset = Fallback(_writeOffset, length, out wraparound);
+            _writeOffset = FallbackOffset(_writeOffset, length, out wraparound);
             if (wraparound)
             {
                 _writeNewLine = false;
@@ -131,11 +159,11 @@ namespace Deckup.LoopQueue
             }
         }
 
+        /// <summary>
+        /// 将指定长度的读取操作记录到读取偏移量
+        /// </summary>
         public void SetRead(int length = 1)
         {
-            if (length <= 0 || length > BufferSize)
-                throw new ArgumentOutOfRangeException();
-
             bool newLine;
             _readOffset = SeekRead(out newLine, length);
             if (newLine)
@@ -145,11 +173,11 @@ namespace Deckup.LoopQueue
             }
         }
 
+        /// <summary>
+        /// 将指定长度的写入操作记录到写入偏移量
+        /// </summary>
         public void SetWrite(int length = 1)
         {
-            if (length <= 0 || length > BufferSize)
-                throw new ArgumentOutOfRangeException();
-
             bool newLine;
             _writeOffset = SeekWrite(out newLine, length);
             if (newLine)
@@ -159,110 +187,26 @@ namespace Deckup.LoopQueue
             }
         }
 
+        /// <summary>
+        /// 探查当前能否读取指定长度的项目，并获取探查后的换行状态与偏移量
+        /// </summary>
         public bool CanRead(out bool newLine, out int seekOffset, int length = 1)
         {
-            if (length <= 0 || length > BufferSize)
-                throw new ArgumentOutOfRangeException();
-
-            seekOffset = SeekRead(out newLine, length);
-
-            if (_writeOffset > 0) //已经写入
-            {
-                if (_readNewLine) //读已经换行，读来到写左边
-                {
-                    if (!newLine)
-                        if (seekOffset <= _writeOffset)
-                            return true;
-                }
-                else //程序刚开始读取，或者读取太慢，写入已换行来到读取的左边
-                {
-                    if (_writeNewLine) //写换行来到读的左边
-                    {
-                        if (newLine)
-                        {
-                            if (seekOffset <= _writeOffset)
-                                return true;
-                        }
-                        else
-                            return true;
-                    }
-                    else //读写都未换行，则说明刚开始读写
-                    {
-                        if (!newLine)
-                            if (seekOffset <= _writeOffset)
-                                return true;
-                    }
-                }
-            }
-            else //_writeOffset == 0 没开始写入或者写入刚换行
-            {
-                if (_writeNewLine) //写换行来到头部，
-                {
-                    if (newLine) //读取需要换行
-                    {
-                        if (seekOffset == 0) //最多读取整个缓冲区空间，不允许换行
-                            return true;
-                    }
-                    else //读取局部一小段
-                        return true;
-                }
-            }
-
-            return false;
+            bool canRead = CanReadSize > 0 && length <= CanReadSize;
+            newLine = false;
+            seekOffset = canRead ? SeekRead(out newLine, length) : 0;
+            return canRead;
         }
 
+        /// <summary>
+        /// 探查当前能否写入指定长度的项目，并获取探查后的换行状态与偏移量
+        /// </summary>
         public bool CanWrite(out bool newLine, out int seekOffset, int length = 1)
         {
-            if (length <= 0 || length > BufferSize)
-                throw new ArgumentOutOfRangeException();
-
-            seekOffset = SeekWrite(out newLine, length);
-
-            if (_readOffset > 0) //已在读取中
-            {
-                if (_writeNewLine) //写已经处于换行，写来到读的左边
-                {
-                    if (!newLine) //已经处于换行则不能再换行了，否则会覆盖头部未读取的数据
-                    {
-                        if (seekOffset <= _readOffset) //限制在已读区间内
-                            return true;
-                    }
-                }
-                else //当前没有换行，写在读的右边
-                {
-                    if (newLine) //当前没有换行，则此时允许换行
-                    {
-                        if (seekOffset <= _readOffset) //限制换行在已读区间内
-                            return true;
-                    }
-                    else //当前没换行也不需要换行，则说明缓存余量够，可以直接写入
-                        return true;
-                }
-            }
-            else //_readOffset == 0 读刚开始或者换行回到头部
-            {
-                //出现读写都为0只有以下情况，
-                //! 1：整个程序刚开始 _writeNewLine = false; _readNewLine = false;
-                //! 2：写刚好到尾部完成换行，_writeNewLine = true; _readNewLine = false;
-                //然后读取也到达尾部完成换行，_readNewLine = true; _writeNewLine = false;
-                //再次准备写，就会检测到上面的读写都为0，这种情况允许写入，读取速度与写入速度相当，此时读取在等待写入
-                //! 3：读到尾部完成换行，_readNewLine = true; _writeNewLine = false;
-                //已经换行的写入（写在等读取让出位置）再次到达尾部再次换行，_writeNewLine = true; _readNewLine = false;
-                //再次准备写，就会检测到上面的读写都为0，这种情况不允许写入，读取速度慢于写入，此时写入在等待读取释放空前
-
-                if (!_writeNewLine) //程序第一次写入。或者读写速度相当，写入换行后就立马被读取，则此时写入换行就被取消，
-                {
-                    if (newLine) //写需要换行
-                    {
-                        if (seekOffset == 0) //最多写满整个缓冲区空间，不允许换行
-                            return true;
-                    }
-                    else //容量够用，不用换行
-                        return true;
-                }
-            }
-
-            return false;
+            bool canWrite = CanWriteSize > 0 && length <= CanWriteSize;
+            newLine = false;
+            seekOffset = canWrite ? SeekWrite(out newLine, length) : 0;
+            return canWrite;
         }
     }
 }

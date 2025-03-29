@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using Deckup.Extend;
-using Deckup.Packet;
+﻿using Deckup.Packet;
 
 namespace Deckup
 {

@@ -159,7 +159,7 @@ namespace Deckup.Slide
                         && ((seek.Index != segment.Index)
                             || seek.Command == Cmd.Err)) //相等则说明上一次已经设置了Ack，这是收到了重传的Ack
                     {
-                        seek.From(segment);
+                        seek.CopyFrom(segment);
                         _receiveMargin = _receiveMargin - 1;
 
                         (_receiveMargin < 0).Break();

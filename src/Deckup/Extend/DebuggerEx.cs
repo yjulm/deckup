@@ -4,24 +4,6 @@ namespace Deckup.Extend
 {
     public static class DebuggerEx
     {
-        private static bool _debug;
-
-        public static bool IsDebug
-        {
-            get { return _debug; }
-        }
-
-        static DebuggerEx()
-        {
-            SetDebug();
-        }
-
-        [Conditional("DEBUG")]
-        private static void SetDebug()
-        {
-            _debug = true;
-        }
-
         [Conditional("DEBUG")]
         public static void Break(this bool fail)
         {
@@ -29,13 +11,13 @@ namespace Deckup.Extend
                 Debugger.Break();
         }
 
+        [Conditional("DEBUG"), Conditional("TRACE")]
         public static void Assert(this bool conditional, bool force = false)
         {
-            if (!conditional)
-                if (_debug)
-                    Debug.Assert(conditional);
-                else if (force)
-                    Trace.Assert(conditional);
+            if (force)
+                Trace.Assert(conditional);
+            else
+                Debug.Assert(conditional);
         }
     }
 }

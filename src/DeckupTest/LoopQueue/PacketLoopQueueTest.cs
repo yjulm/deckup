@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,138 +13,144 @@ namespace DeckupTest.LoopQueue
         [TestMethod]
         public void PacketLoopQueue_A000_ReadWrite()
         {
-            TestPrototype(0, 0, 0, false, 123456);
+            TestPrototype(0, 0, 0, false, 1234567);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A001_SlowReadFastWrite()
         {
-            TestPrototype(3, 1);
+            TestPrototype(1, 0);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A002_FastReadSlowWrite()
         {
-            TestPrototype(1, 3);
+            TestPrototype(0, 1);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A003_SlowReadFastWriteOneByte()
         {
-            TestPrototype(3, 1, 1);
+            TestPrototype(1, 0, 1);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A004_FastReadSlowWriteOneByte()
         {
-            TestPrototype(1, 3, 1);
+            TestPrototype(0, 1, 1);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A005_SlowReadFastWriteNormalSize()
         {
-            TestPrototype(3, 1, 20);
+            TestPrototype(1, 0, 20);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A006_FastReadSlowWriteNormalSize()
         {
-            TestPrototype(1, 3, 20);
+            TestPrototype(0, 1, 20);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A007_SlowReadFastWriteMaxBufferSize()
         {
-            TestPrototype(3, 1, PacketLoopQueueWrap.BufferSize);
+            TestPrototype(1, 0, PacketLoopQueueWrap.BufferSize);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A008_FastReadSlowWriteMaxBufferSize()
         {
-            TestPrototype(1, 3, PacketLoopQueueWrap.BufferSize);
+            TestPrototype(0, 1, PacketLoopQueueWrap.BufferSize);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A009_SlowReadFastWriteHalfBufferSize()
         {
-            TestPrototype(3, 1, PacketLoopQueueWrap.BufferSize / 2);
+            TestPrototype(1, 0, PacketLoopQueueWrap.BufferSize / 2);
         }
 
         [TestMethod]
         public void PacketLoopQueue_A010_FastReadSlowWriteHalfBufferSize()
         {
-            TestPrototype(1, 3, PacketLoopQueueWrap.BufferSize / 2);
+            TestPrototype(0, 1, PacketLoopQueueWrap.BufferSize / 2);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B000_Unsafe_ReadWrite()
         {
-            TestPrototype(0, 0, 0, true, 123456);
+            TestPrototype(0, 0, 0, true, 1234567);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B001_Unsafe_SlowReadFastWrite()
         {
-            TestPrototype(3, 1, 0, true);
+            TestPrototype(1, 0, 0, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B002_Unsafe_FastReadSlowWrite()
         {
-            TestPrototype(1, 3, 0, true);
+            TestPrototype(0, 1, 0, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B003_Unsafe_SlowReadFastWriteOneByte()
         {
-            TestPrototype(3, 1, 1, true);
+            TestPrototype(1, 0, 1, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B004_Unsafe_FastReadSlowWriteOneByte()
         {
-            TestPrototype(1, 3, 1, true);
+            TestPrototype(0, 1, 1, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B005_Unsafe_SlowReadFastWriteNormalSize()
         {
-            TestPrototype(3, 1, 20, true);
+            TestPrototype(1, 0, 20, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B006_Unsafe_FastReadSlowWriteNormalSize()
         {
-            TestPrototype(1, 3, 20, true);
+            TestPrototype(0, 1, 20, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B007_Unsafe_SlowReadFastWriteMaxBufferSize()
         {
-            TestPrototype(3, 1, PacketLoopQueueWrap.BufferSize, true);
+            TestPrototype(1, 0, PacketLoopQueueWrap.BufferSize, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B008_Unsafe_FastReadSlowWriteMaxBufferSize()
         {
-            TestPrototype(1, 3, PacketLoopQueueWrap.BufferSize, true);
+            TestPrototype(0, 1, PacketLoopQueueWrap.BufferSize, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B009_Unsafe_SlowReadFastWriteHalfBufferSize()
         {
-            TestPrototype(3, 1, PacketLoopQueueWrap.BufferSize / 2, true);
+            TestPrototype(1, 0, PacketLoopQueueWrap.BufferSize / 2, true);
         }
 
         [TestMethod]
         public void PacketLoopQueue_B010_Unsafe_FastReadSlowWriteHalfBufferSize()
         {
-            TestPrototype(1, 3, PacketLoopQueueWrap.BufferSize / 2, true);
+            TestPrototype(0, 1, PacketLoopQueueWrap.BufferSize / 2, true);
         }
 
-        private void TestPrototype(int readWait, int writeWait, int packetSize = 0, bool useUnsafe = false, int testCount = 2000)
+        private void TestPrototype(int readWait, int writeWait, int packetSize = 0, bool useUnsafe = false, int testCount = 5000)
         {
-            PacketLoopQueueWrap wrap = new PacketLoopQueueWrap(testCount, useUnsafe, packetSize);
+            BaseTestPrototype(readWait, writeWait, packetSize, useUnsafe, testCount);
+            BaseTestPrototype(readWait, writeWait, packetSize, useUnsafe, testCount, true); //ProxyMode
+        }
+
+        private void BaseTestPrototype(int readWait, int writeWait, int packetSize = 0, bool useUnsafe = false, int testCount = 5000, bool proxyMode = false)
+        {
+            PacketLoopQueueWrap wrap = new PacketLoopQueueWrap(testCount, useUnsafe, proxyMode, packetSize);
             //wrap.ShowData = true;
             ReaderWriterLockSlim lockSlim = new ReaderWriterLockSlim();
             Debug.WriteLine("\r\n===========================\r\n");
@@ -153,14 +160,22 @@ namespace DeckupTest.LoopQueue
             {
                 try
                 {
+                    bool success = true;
+                    byte[] data = null;
+
                     while (!wrap.WriteComplete)
                     {
+                        if (success)
+                            data = wrap.CreateData();
+
                         lockSlim.EnterWriteLock();
-                        wrap.Write(packetSize);
+                        success = wrap.Write(data);
                         lockSlim.ExitWriteLock();
 
                         if (writeWait > 0)
-                            Task.Delay(writeWait).Wait();
+                            Thread.Sleep(writeWait);
+                        else
+                            Thread.Yield();
                     }
                 }
                 catch (Exception ex)
@@ -176,11 +191,13 @@ namespace DeckupTest.LoopQueue
                     while (!wrap.ReadComplete)
                     {
                         lockSlim.EnterReadLock();
-                        wrap.Read(packetSize);
+                        wrap.Read();
                         lockSlim.ExitReadLock();
 
                         if (readWait > 0)
-                            Task.Delay(readWait).Wait();
+                            Thread.Sleep(readWait);
+                        else
+                            Thread.Yield();
                     }
                 }
                 catch (Exception ex)

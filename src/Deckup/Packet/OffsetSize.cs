@@ -8,18 +8,18 @@ namespace Deckup.Packet
     public static class OffsetSize<TPktStruct> where TPktStruct : IPktStruct
     {
         public static readonly int Size;
-        public static readonly Dictionary<string, FieldInfoPair> Offset;
+        public static readonly Dictionary<string, FieldInfoPair> InfoPairs;
 
         static OffsetSize()
         {
             Type t = typeof(TPktStruct);
 
             Size = Marshal.SizeOf(t);
-            Offset = new Dictionary<string, FieldInfoPair>();
+            InfoPairs = new Dictionary<string, FieldInfoPair>();
 
             FieldInfo[] infos = t.GetFields();
             foreach (FieldInfo info in infos)
-                Offset.Add(info.Name, new FieldInfoPair()
+                InfoPairs.Add(info.Name, new FieldInfoPair()
                 {
                     Offset = (int)Marshal.OffsetOf(t, info.Name),
                     Size = Marshal.SizeOf(info.FieldType)
@@ -31,13 +31,12 @@ namespace Deckup.Packet
     {
         public int Offset;
         public int Size;
+        private int _baseOffset;
 
         public int RealOffset
         {
             get { return _baseOffset + Offset; }
         }
-
-        private int _baseOffset;
 
         public FieldInfoPair SetBase(int baseOffset)
         {

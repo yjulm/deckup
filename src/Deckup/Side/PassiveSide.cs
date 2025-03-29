@@ -17,7 +17,7 @@ namespace Deckup.Side
         public Segment RcvSeg
         {
             get { return _core.Rcv; }
-            set { _core.Rcv.From(value); }
+            set { _core.Rcv.CopyFrom(value); }
         }
 
         private Segment _ackSeg;

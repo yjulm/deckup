@@ -8,6 +8,9 @@ using System.Runtime.InteropServices;
 
 namespace Deckup
 {
+    /// <summary>
+    /// 一个数据传输片段，依据片段结构实现的结构包对象
+    /// </summary>
     public class Segment : Packet<SegmentPkt>
     {
 #if DEBUG
@@ -24,11 +27,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Header; //BitConverter.ToUInt16(Buf, GetOffset());
+                return _cache.Header; //BitConverter.ToUInt16(Buf, GetOffset());
             }
             set
             {
-                _pkt.Header = value;
+                _cache.Header = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -46,11 +49,11 @@ namespace Deckup
         {
             get
             {
-                return (Cmd)_pkt.Command; //(Cmd)BitConverter.ToUInt16(Buf, GetOffset());
+                return (Cmd)_cache.Command; //(Cmd)BitConverter.ToUInt16(Buf, GetOffset());
             }
             set
             {
-                _pkt.Command = (ushort)value;
+                _cache.Command = (ushort)value;
                 SetField(GetPair(), BitConverter.GetBytes((ushort)value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes((ushort)value)
@@ -68,11 +71,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Number; //BitConverter.ToInt16(Buf, GetOffset());
+                return _cache.Number; //BitConverter.ToInt16(Buf, GetOffset());
             }
             set
             {
-                _pkt.Number = value;
+                _cache.Number = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -90,11 +93,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Length; //BitConverter.ToInt16(Buf, GetOffset());
+                return _cache.Length; //BitConverter.ToInt16(Buf, GetOffset());
             }
             set
             {
-                _pkt.Length = value;
+                _cache.Length = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -112,11 +115,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Index; //BitConverter.ToUInt32(Buf, GetOffset());
+                return _cache.Index; //BitConverter.ToUInt32(Buf, GetOffset());
             }
             set
             {
-                _pkt.Index = value;
+                _cache.Index = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -134,11 +137,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Confirm; //BitConverter.ToUInt32(Buf, GetOffset());
+                return _cache.Confirm; //BitConverter.ToUInt32(Buf, GetOffset());
             }
             set
             {
-                _pkt.Confirm = value;
+                _cache.Confirm = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -156,11 +159,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Left; //BitConverter.ToUInt32(Buf, GetOffset());
+                return _cache.Left; //BitConverter.ToUInt32(Buf, GetOffset());
             }
             set
             {
-                _pkt.Left = value;
+                _cache.Left = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -178,11 +181,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Margin; //BitConverter.ToInt32(Buf, GetOffset());
+                return _cache.Margin; //BitConverter.ToInt32(Buf, GetOffset());
             }
             set
             {
-                _pkt.Margin = value;
+                _cache.Margin = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -200,11 +203,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.Timestamp; //BitConverter.ToInt64(Buf, GetOffset());
+                return _cache.Timestamp; //BitConverter.ToInt64(Buf, GetOffset());
             }
             set
             {
-                _pkt.Timestamp = value;
+                _cache.Timestamp = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -222,11 +225,11 @@ namespace Deckup
         {
             get
             {
-                return _pkt.AckTimestamp; //BitConverter.ToInt64(Buf, GetOffset());
+                return _cache.AckTimestamp; //BitConverter.ToInt64(Buf, GetOffset());
             }
             set
             {
-                _pkt.AckTimestamp = value;
+                _cache.AckTimestamp = value;
                 SetField(GetPair(), BitConverter.GetBytes(value));
                 // FieldInfoPair pair = GetPair();
                 // Buffer.BlockCopy(BitConverter.GetBytes(value)
@@ -330,13 +333,12 @@ namespace Deckup
         public void Clear()
         {
             Array.Clear(Buf, BufOffset, BufSize);
-            _pkt = default(SegmentPkt);
+            _cache = default(SegmentPkt);
         }
 
-        public Segment From(Segment segment)
+        public Segment CopyFrom(Segment segment)
         {
             FromBytes(segment.Buf, segment.BufOffset, segment.ValidSize);
-            Cache();
             return this;
         }
 
@@ -355,21 +357,28 @@ namespace Deckup
         /// <returns></returns>
         public Segment Clone()
         {
-            return new Segment(BufSize).From(this);
+            return new Segment(BufSize).CopyFrom(this);
+        }
+
+        public override IPkt FromBytes(byte[] buffer, int offset, int length)
+        {
+            base.FromBytes(buffer, offset, length);
+            Cache();
+            return this;
         }
 
         public override void Cache()
         {
-            _pkt.Header = BitConverter.ToUInt16(Buf, GetOffset(() => _pkt.Header));
-            _pkt.Command = BitConverter.ToUInt16(Buf, GetOffset(() => _pkt.Command));
-            _pkt.Number = BitConverter.ToInt16(Buf, GetOffset(() => _pkt.Number));
-            _pkt.Length = BitConverter.ToInt16(Buf, GetOffset(() => _pkt.Length));
-            _pkt.Index = BitConverter.ToUInt32(Buf, GetOffset(() => _pkt.Index));
-            _pkt.Confirm = BitConverter.ToUInt32(Buf, GetOffset(() => _pkt.Confirm));
-            _pkt.Left = BitConverter.ToUInt32(Buf, GetOffset(() => _pkt.Left));
-            _pkt.Margin = BitConverter.ToInt32(Buf, GetOffset(() => _pkt.Margin));
-            _pkt.Timestamp = BitConverter.ToInt64(Buf, GetOffset(() => _pkt.Timestamp));
-            _pkt.AckTimestamp = BitConverter.ToInt64(Buf, GetOffset(() => _pkt.AckTimestamp));
+            _cache.Header = BitConverter.ToUInt16(Buf, GetOffset(nameof(_cache.Header))); //GetOffset(() => _cache.Header));
+            _cache.Command = BitConverter.ToUInt16(Buf, GetOffset(nameof(_cache.Command))); //GetOffset(() => _cache.Command));
+            _cache.Number = BitConverter.ToInt16(Buf, GetOffset(nameof(_cache.Number))); //GetOffset(() => _cache.Number));
+            _cache.Length = BitConverter.ToInt16(Buf, GetOffset(nameof(_cache.Length))); //GetOffset(() => _cache.Length));
+            _cache.Index = BitConverter.ToUInt32(Buf, GetOffset(nameof(_cache.Index))); //GetOffset(() => _cache.Index));
+            _cache.Confirm = BitConverter.ToUInt32(Buf, GetOffset(nameof(_cache.Confirm))); //GetOffset(() => _cache.Confirm));
+            _cache.Left = BitConverter.ToUInt32(Buf, GetOffset(nameof(_cache.Left))); //GetOffset(() => _cache.Left));
+            _cache.Margin = BitConverter.ToInt32(Buf, GetOffset(nameof(_cache.Margin))); //GetOffset(() => _cache.Margin));
+            _cache.Timestamp = BitConverter.ToInt64(Buf, GetOffset(nameof(_cache.Timestamp))); //GetOffset(() => _cache.Timestamp));
+            _cache.AckTimestamp = BitConverter.ToInt64(Buf, GetOffset(nameof(_cache.AckTimestamp))); //GetOffset(() => _cache.AckTimestamp));
         }
 
         public override string ToString()
