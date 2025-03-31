@@ -16,6 +16,7 @@ namespace Deckup.Unmanaged
     /// <summary>
     /// 基于非托管内存的内存流集合，该集合将多个不连续的小内存块抽象为一个假定的连续大内存块，
     /// 以方便执行统一的读写操作接口。每个小内存块为单独可读写的流对象，但并不对外提供直接操作。
+    /// 该集合不会自动调整容量，写入操作需要注意当前位置的可操作大小。
     /// </summary>
     public class NativeBufferStreamCollection : Stream
     {

@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 namespace Deckup.Unmanaged
 {
     /// <summary>
-    /// 基于非托管内存的内存流，主要防止使用托管内存流在操作大文件时触发OOM
-    /// 包装模式下无法自动调整容量，写入操作需要注意当前位置是否已到流尾
+    /// 基于非托管内存的内存流，在非包装模式时可自动调节容量。
+    /// 包装模式下无法自动调整容量，写入操作需要注意当前位置的可操作大小。
     /// </summary>
     public class NativeBufferStream : Stream
     {

@@ -225,9 +225,9 @@ namespace DeckupTest.LoopQueue
             return ret;
         }
 
-        protected override void PrintData(byte[] data, bool read)
+        protected override void PrintData(byte[] data, bool read, int offset = 0, int length = 0)
         {
-            base.PrintData(data, read);
+            base.PrintData(data, read, offset, length);
             Debug.WriteLine(string.Format(" ReadOffset:{0} WriteOffset:{1}{2}"
                 , _queue.ReadOffset
                 , _queue.WriteOffset
